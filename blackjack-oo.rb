@@ -46,23 +46,15 @@ module Scoring
     self.hand.select { |c| c if c.rank == 'A' }.count
   end
 
-  def hand_value
-    value = total()
-    num_of_aces = aces()
-    while value > 21 && num_of_aces > 0
-      value -= 10
-      num_of_aces -= 1
-    end
-    value
-  end
-
-  def soft_hand_value
+  def hand_value(soft=true)
     values, num_of_aces = [total()], aces()
     num_of_aces.times do
       values = values + values.map { |v| v - 10 }
       num_of_aces -= 1
     end
-    if values.min > 21
+    if not soft
+      values.select { |c| c if c < 22 }.max || values.min
+    elsif values.min > 21
       values.min.to_s
     elsif values.select { |c| c if c < 22 }.uniq.length == 1
       values.select { |c| c if c < 22 }.uniq.first.to_s
@@ -170,14 +162,16 @@ class Game
     puts hline
 
     if dealer_show == true
-      printf(fmt, self.dealer.name, self.dealer.hand_value, self.dealer.pretty_hand)
+      printf(fmt, self.dealer.name, self.dealer.hand_value,
+             self.dealer.pretty_hand)
     else
       printf(fmt, self.dealer.name, "??", "X X")
     end
     if soft == true
-      printf(fmt, self.human.name, self.human.soft_hand_value, self.human.pretty_hand)
-    else
       printf(fmt, self.human.name, self.human.hand_value, self.human.pretty_hand)
+    else
+      printf(fmt, self.human.name, self.human.hand_value(soft=false),
+             self.human.pretty_hand)
     end
     puts ""
   end
