@@ -161,7 +161,7 @@ class Game
     puts hline
 
     if dealer_show == true
-      printf(fmt, self.dealer.name, self.dealer.hand_value(soft=true),
+      printf(fmt, self.dealer.name, self.dealer.hand_value,
              self.dealer.pretty_hand)
     else
       printf(fmt, self.dealer.name, "??", "X X")
