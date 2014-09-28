@@ -46,7 +46,7 @@ module Scoring
     self.hand.select { |c| c if c.rank == 'A' }.count
   end
 
-  def hand_value(soft=true)
+  def hand_value(soft=false)
     values, num_of_aces = [total()], aces()
     num_of_aces.times do
       values = values + values.map { |v| v - 10 }
@@ -85,7 +85,6 @@ class Player
     #{name}
   end
 end
-
 
 class Card
   attr_reader :rank, :suit, :value
@@ -153,7 +152,7 @@ class Game
     {name: gets.chomp}
   end
 
-  def display(dealer_show=false, soft=false)
+  def display(dealer_show=false, soft_values=false)
     system 'clear'
     fmt = "%-8s %-11s %-20s\n"
     hline = "-" * 33 + "Hand: #{hand_number}" + "\n"
@@ -162,15 +161,16 @@ class Game
     puts hline
 
     if dealer_show == true
-      printf(fmt, self.dealer.name, self.dealer.hand_value,
+      printf(fmt, self.dealer.name, self.dealer.hand_value(soft=true),
              self.dealer.pretty_hand)
     else
       printf(fmt, self.dealer.name, "??", "X X")
     end
-    if soft == true
-      printf(fmt, self.human.name, self.human.hand_value, self.human.pretty_hand)
+    if soft_values == true
+      printf(fmt, self.human.name, self.human.hand_value(soft=true),
+             self.human.pretty_hand)
     else
-      printf(fmt, self.human.name, self.human.hand_value(soft=false),
+      printf(fmt, self.human.name, self.human.hand_value,
              self.human.pretty_hand)
     end
     puts ""
@@ -212,14 +212,14 @@ class Game
     while
       self.human.hand = deck.deal_n(2)
       self.dealer.hand = deck.deal_n(2)
-      display(dealer_show=false, soft=true)
+      display(dealer_show=false, soft_values=true)
 
       handle_round self.human do
         begin
           puts "Hit or Stay? (h/s)"
           choice = gets.chomp
           if choice == 's'
-            display(dealer_show=false, soft=true)
+            display(dealer_show=false, soft_values=true)
             break
           end
           while choice != 's' && choice != 'h'
@@ -227,7 +227,7 @@ class Game
             choice = gets.chomp
           end
           self.human.hand += deck.deal_n(1)
-          display(dealer_show=false, soft=true)
+          display(dealer_show=false, soft_values=true)
         end until choice == 's' || self.human.hand_value > 21
       end
 
