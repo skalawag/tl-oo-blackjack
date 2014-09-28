@@ -62,7 +62,7 @@ module Scoring
       values = values + values.map { |v| v - 10 }
       num_of_aces -= 1
     end
-    if values.min && values.min > 21
+    if values.min > 21
       values.min.to_s
     elsif values.select { |c| c if c < 22 }.uniq.length == 1
       values.select { |c| c if c < 22 }.uniq.first.to_s
