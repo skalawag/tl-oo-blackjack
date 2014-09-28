@@ -36,8 +36,6 @@ require 'pry'
 #   - determines winner
 #   - holds the deck and deals cards
 
-
-# not sure about this. but I can add more methods making it useful..?
 module Scoring
 
   def total
